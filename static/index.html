@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chess Coach</title>
+<link rel="stylesheet" href="/static/style.css?v=3">
+</head>
+<body>
+<header class="top">
+  <div class="brand"><span class="logo">♞&#xFE0E;</span> Chess Coach <span class="who">AAMKAAADMI</span></div>
+  <nav id="nav">
+    <a data-tab="dashboard" class="on">Dashboard</a>
+    <a data-tab="puzzles">My Blunders</a>
+    <a data-tab="openings">Openings</a>
+    <a data-tab="review">Game Review</a>
+    <a data-tab="plan">1500 Plan</a>
+    <a data-tab="play">Play Yourself</a>
+  </nav>
+  <div class="sync"><button id="syncBtn" class="btn">Sync</button><span id="syncStatus" class="muted small"></span></div>
+</header>
+
+<main>
+<!-- DASHBOARD -->
+<section id="dashboard" class="tab on">
+  <div class="cards" id="ratingCards"></div>
+  <div class="grid2">
+    <div class="panel">
+      <div class="panel-h"><h2>Rating over time</h2><div class="seg" id="chartSeg"></div></div>
+      <div id="ratingChart" class="chart"></div>
+    </div>
+    <div class="panel">
+      <h2>Are you improving?</h2>
+      <p class="muted small">Last 30 days vs the 30 days before.</p>
+      <table class="cmp" id="progressTable"></table>
+    </div>
+  </div>
+  <div class="panel">
+    <h2>Top 5 weaknesses, by rating cost</h2>
+    <p class="muted small">Estimated rating points lost across all your games: what you'd normally score from the position before the key moment, minus what you actually got.</p>
+    <div id="weakList"></div>
+  </div>
+  <div class="panel">
+    <h2>Abandoned games</h2>
+    <div id="abandoned"></div>
+  </div>
+  <div class="grid2">
+    <div class="panel"><h2>Where games are lost</h2><div id="phases"></div></div>
+    <div class="panel"><h2>Tilt check</h2><div id="tilt"></div></div>
+  </div>
+</section>
+
+<!-- PUZZLES -->
+<section id="puzzles" class="tab">
+  <div class="play-layout">
+    <div><div id="pzBoard" class="board-wrap"></div></div>
+    <div class="side">
+      <div class="panel">
+        <div class="panel-h"><h2 id="pzTitle">Find the move you missed</h2>
+          <select id="pzTheme"><option value="">All themes (weakest first)</option></select></div>
+        <p id="pzContext" class="muted small"></p>
+        <p id="pzPrompt" class="prompt"></p>
+        <div id="pzFeedback"></div>
+        <div class="row">
+          <button id="pzHint" class="btn ghost">Hint</button>
+          <button id="pzGiveUp" class="btn ghost">Show answer</button>
+          <button id="pzNext" class="btn">Next puzzle</button>
+        </div>
+      </div>
+      <div class="panel"><h3>Your puzzle deck</h3><div id="pzStats" class="stats"></div>
+        <p class="muted small">Every position is from one of your own games, right before you blundered or missed a win. Get it wrong and it comes back in 10 minutes. Get it right and it comes back in 1, 3, then about 8+ days.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- OPENINGS -->
+<section id="openings" class="tab">
+  <div class="grid3" id="repCards"></div>
+  <div class="panel">
+    <h2>Positions you keep getting wrong</h2>
+    <p class="muted small">Same opening position, same mistake, more than once. Click one to drill it.</p>
+    <div id="trouble" class="trouble"></div>
+  </div>
+  <div class="panel" id="drillPanel" hidden>
+    <div class="play-layout">
+      <div><div id="drillBoard" class="board-wrap"></div></div>
+      <div class="side"><h2>Drill</h2><p id="drillText" class="prompt"></p><div id="drillFb"></div>
+        <button id="drillClose" class="btn ghost">Close</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- REVIEW -->
+<section id="review" class="tab">
+  <div class="review-layout">
+    <div class="panel gamelist">
+      <div class="filters">
+        <select id="fResult"><option value="">All results</option><option value="loss">Losses</option><option value="win">Wins</option><option value="draw">Draws</option></select>
+        <select id="fTc"><option value="">All speeds</option><option>rapid</option><option>blitz</option><option>bullet</option></select>
+        <label class="small"><input type="checkbox" id="fAb"> abandoned</label>
+      </div>
+      <div id="gameList"></div>
+    </div>
+    <div class="viewer">
+      <div class="panel" id="gvHead"><p class="muted">Pick a game on the left.</p></div>
+      <div class="play-layout">
+        <div class="board-col">
+          <div class="board-and-bar"><div id="evalBar" class="evalbar"><div></div></div><div id="rvBoard" class="board-wrap"></div></div>
+          <div class="row center">
+            <button class="btn ghost" data-nav="start">⏮</button><button class="btn ghost" data-nav="prev">◀</button>
+            <button class="btn ghost" data-nav="next">▶</button><button class="btn ghost" data-nav="end">⏭</button>
+            <button class="btn ghost" data-nav="nextErr">Next mistake ▶▶</button>
+          </div>
+          <div id="evalGraph" class="evalgraph"></div>
+        </div>
+        <div class="side">
+          <div class="panel" id="rvExplain"><p class="muted">Step through with ◀ ▶ or the arrow keys.</p></div>
+          <div class="panel"><div id="moveList" class="movelist"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PLAN -->
+<section id="plan" class="tab">
+  <div class="grid2">
+    <div class="panel"><h2>House rules</h2><ol id="rules" class="rules"></ol></div>
+    <div class="panel"><h2>Every day</h2><ul id="daily" class="daily"></ul>
+      <h2 style="margin-top:20px">This week</h2><table id="week" class="week"></table></div>
+  </div>
+  <div class="panel"><h2>Road to 1500 (rapid)</h2>
+    <p class="muted small" id="msNote"></p>
+    <div id="msChart" class="chart"></div>
+    <div id="msTable" class="ms"></div>
+  </div>
+</section>
+
+<!-- PLAY -->
+<section id="play" class="tab">
+  <div class="play-layout">
+    <div><div id="botBoard" class="board-wrap"></div></div>
+    <div class="side">
+      <div class="panel">
+        <h2>Play against yourself</h2>
+        <p class="muted small">The bot opens with the moves <b>you</b> actually play (from your 1,400 games), then plays like you: it blunders about as often as you do, and its favourite blunder is your favourite, leaving a piece where it can be taken.</p>
+        <div class="row">
+          <label>You play <select id="botColor"><option value="white">White</option><option value="black">Black</option></select></label>
+          <label>Bot <select id="botStrength"><option value="1">= you today</option><option value="1.6">you, fewer blunders</option><option value="3">you at ~1000</option></select></label>
+        </div>
+        <div class="row"><button id="botNew" class="btn">New game</button><button id="botUndo" class="btn ghost">Undo</button><button id="botFlip" class="btn ghost">Flip</button></div>
+      </div>
+      <div class="panel"><div id="botStatus" class="prompt">Press New game.</div><div id="botWhy" class="muted small"></div></div>
+      <div class="panel"><div id="botMoves" class="movelist"></div></div>
+    </div>
+  </div>
+</section>
+</main>
+
+<script src="/static/app.js?v=3"></script>
+</body>
+</html>
